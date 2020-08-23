@@ -64,14 +64,17 @@ inputPanel(
   selectInput(inputId = "parameter", 
               label = "dependent parameter",
               choices = c("ALK", "DIC", "fCO2", "fCO2insitu", "fCO2pot", 
-                          "HCO3", "OmegaAragonite", "OmegaCalcite", "pCO2", "pCO2insitu", "pCO2pot", "pH"))
+                          "HCO3", "OmegaAragonite", "OmegaCalcite", "pCO2", "pCO2insitu", "pCO2pot", "pH")),
+  sliderInput(inputId = "bins",
+              label = "number of bins in plot",
+              min = 3, max = 42, value = 11)
 )
 
 renderPlot({
   carb.data() %>%
     ggplot(aes_string(x = "co2", y = "co3", z = input$parameter)) +
-    geom_contour(size = 1) +
-    metR::geom_label_contour() +
+    geom_contour(size = 1, breaks = pretty(carb.data()[, input$parameter], n = input$bins)) +
+    metR::geom_label_contour(breaks = pretty(carb.data()[, input$parameter], n = input$bins)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     theme_light() +
