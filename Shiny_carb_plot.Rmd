@@ -82,15 +82,19 @@ renderPlot({
 
 ```{r table, echo=FALSE}
 
-inputPanel({
-  sliderInput(inputId = "n_row", label = "Rows to display", width = "5cm",
-              min = 0, max = 10200, value = c(0,10), step = 5)
-})
+# inputPanel({
+#   sliderInput(inputId = "n_row", label = "Rows to display", width = "5cm",
+#               min = 0, max = 10200, value = c(0,10), step = 5)
+# })
+# 
+# renderTable({
+#   carb.data()[input$n_row[1]:input$n_row[2],]
+# })
 
-renderTable({
-  carb.data()[input$n_row[1]:input$n_row[2],]
-})
-
+DT::renderDataTable(
+  DT::datatable(carb.data(), rownames = FALSE, filter = "top") %>%
+    DT::formatRound(-(1:2), 2)
+)
 ```
 
 
