@@ -40,10 +40,9 @@ carb.data <- cbind(co2_data,
                    ) %>%
                      select(-c(flag, S, T, Patm, P)) 
 ) %>%
-  .[,order(colnames(.))]
-
-# geom_label_contour does not handle Inf
-carb.data[carb.data == "-Inf" | carb.data == "Inf"] <- NA
+  .[,order(colnames(.))] %>%
+  na_if("-Inf") %>% 
+  na_if("Inf") # geom_label_contour does not handle Inf
 
 ```
 
