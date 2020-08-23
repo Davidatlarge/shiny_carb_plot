@@ -50,7 +50,7 @@ carb.data[carb.data == "-Inf" | carb.data == "Inf"] <- NA
 ```{r table, echo=FALSE}
 
 inputPanel({
-  numericInput(inputId = "n_row", label = "Rows to display", value = 5)
+  numericInput(inputId = "n_row", label = "Rows to display", min = 5, max = 100, value = 5)
 })
 
 renderTable({
