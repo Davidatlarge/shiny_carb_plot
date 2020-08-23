@@ -1,0 +1,80 @@
+---
+title: "Carb"
+author: "David Kaiser"
+date: "23 8 2020"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## some header
+
+some text
+
+```{r data, echo=FALSE}
+
+co2_data <- expand.grid(
+  co2 = seq(from = 0, to = 100, length.out = 101),
+  co3 = seq(from = 0, to = 300, length.out = 101)
+)
+
+carb.data <- cbind(co2_data,
+                   seacarb::carb(
+                     flag = 3,
+                     var1 = co2_data$co2 / 1000000,
+                     var2 = co2_data$co3 / 1000000,
+                     S = 35,
+                     T = 25,
+                     P = 0,
+                     Pt = 0,
+                     Sit = 0,
+                     k1k2 = "x",
+                     kf = "x",
+                     ks = "d",
+                     pHscale = "T"
+                   ) %>%
+                     select(-c(flag, S, T, Patm, P)) 
+) %>%
+  .[,order(colnames(.))]
+
+# geom_label_contour does not handle Inf
+carb.data[carb.data == "-Inf" | carb.data == "Inf"] <- NA
+
+```
+
+```{r table, echo=FALSE}
+
+inputPanel({
+  numericInput(inputId = "n_row", label = "Rows to display", value = 5)
+})
+
+renderTable({
+  head(carb.data, input$n_row)
+})
+
+```
+
+```{r plot, echo=FALSE}
+
+inputPanel(
+  selectInput(inputId = "parameter", 
+              label = "dependent parameter",
+              choices = colnames(carb.data))
+)
+
+renderPlot({
+  ggplot(data = carb.data, aes_string(x = "co2", y = "co3", z = input$parameter)) +
+    geom_contour() +
+    metR::geom_label_contour() +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    theme_light()
+})
+
+```
+
