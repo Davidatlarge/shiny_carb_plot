@@ -12,49 +12,49 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-## some header
+## Carbonate System - relationships between parameters
 
-some text
+This `shiny` app displays the relationship between different parameters of the carbonate system. 
+The concentrations of CO~2~ and CO~3~^2-^ on the axes are in $\mu$mol kg^-1^. The other parameters are calculated using `seacarb::carb()`. The plot is inspired by an old [presentation by Andrew Dickson](https://www.youtube.com/watch?v=dR917nXLEHU). I will make the x and y parameters selectable later.
 
 ```{r data, echo=FALSE}
+
+inputPanel(
+  numericInput("temp", label = "temperature value [°C]", value = 25),
+  numericInput("sal", label = "salinity value", value = 35),
+  numericInput("pressure", label = "hydrostatic pressure [bar]", value = 0),
+  numericInput("Patm", label = "atmospheric pressure [atm]", value = 1)
+)
 
 co2_data <- expand.grid(
   co2 = seq(from = 0, to = 100, length.out = 101),
   co3 = seq(from = 0, to = 300, length.out = 101)
 )
 
-carb.data <- cbind(co2_data,
-                   seacarb::carb(
-                     flag = 3,
-                     var1 = co2_data$co2 / 1000000,
-                     var2 = co2_data$co3 / 1000000,
-                     S = 35,
-                     T = 25,
-                     P = 0,
-                     Pt = 0,
-                     Sit = 0,
-                     k1k2 = "x",
-                     kf = "x",
-                     ks = "d",
-                     pHscale = "T"
-                   ) %>%
-                     select(-c(flag, S, T, Patm, P)) 
-) %>%
-  .[,order(colnames(.))] %>%
-  na_if("-Inf") %>% 
-  na_if("Inf") # geom_label_contour does not handle Inf
-
-```
-
-```{r table, echo=FALSE}
-
-inputPanel({
-  numericInput(inputId = "n_row", label = "Rows to display", min = 5, max = 100, value = 5)
+carb.data <- reactive({
+  cbind(co2_data,
+        seacarb::carb(
+          flag = 3,
+          var1 = co2_data$co2 / 1000000,
+          var2 = co2_data$co3 / 1000000,
+          S = input$sal,
+          T = input$temp,
+          P = input$pressure,
+          Patm = input$Patm,
+          Pt = 0,
+          Sit = 0,
+          k1k2 = "x",
+          kf = "x",
+          ks = "d",
+          pHscale = "T"
+        ) %>%
+          select(-c(flag, S, T, Patm, P, CO2, CO3)) 
+  ) %>%
+    #.[,order(colnames(.))] %>%
+    na_if("-Inf") %>% 
+    na_if("Inf") # geom_label_contour does not handle Inf
 })
 
-renderTable({
-  head(carb.data, input$n_row)
-})
 
 ```
 
@@ -63,17 +63,34 @@ renderTable({
 inputPanel(
   selectInput(inputId = "parameter", 
               label = "dependent parameter",
-              choices = colnames(carb.data))
+              choices = c("ALK", "DIC", "fCO2", "fCO2insitu", "fCO2pot", 
+                          "HCO3", "OmegaAragonite", "OmegaCalcite", "pCO2", "pCO2insitu", "pCO2pot", "pH"))
 )
 
 renderPlot({
-  ggplot(data = carb.data, aes_string(x = "co2", y = "co3", z = input$parameter)) +
-    geom_contour() +
+  carb.data() %>%
+    ggplot(aes_string(x = "co2", y = "co3", z = input$parameter)) +
+    geom_contour(size = 1) +
     metR::geom_label_contour() +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    theme_light()
+    theme_light() +
+    theme(text = element_text(size = 20))
 })
 
 ```
+
+```{r table, echo=FALSE}
+
+inputPanel({
+  sliderInput(inputId = "n_row", label = "Rows to display", width = "5cm",
+              min = 0, max = 10200, value = c(0,10), step = 5)
+})
+
+renderTable({
+  carb.data()[input$n_row[1]:input$n_row[2],]
+})
+
+```
+
 
