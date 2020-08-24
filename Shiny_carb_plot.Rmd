@@ -74,12 +74,13 @@ renderPlot({
   carb.data() %>%
     ggplot(aes_string(x = "co2", y = "co3", z = input$parameter)) +
     geom_contour(size = 1, breaks = pretty(carb.data()[, input$parameter], n = input$bins)) +
-    metR::geom_label_contour(breaks = pretty(carb.data()[, input$parameter], n = input$bins)) +
-    scale_x_continuous(expand = c(0, 0)) +
+    metR::geom_text_contour(breaks = pretty(carb.data()[, input$parameter], n = input$bins),
+                            rotate = TRUE, stroke = 0.3) +
+    #scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
-    theme_light() +
+    theme_minimal() +
     theme(text = element_text(size = 20))
-})
+}, width = 1000, height = 700)
 
 ```
 
