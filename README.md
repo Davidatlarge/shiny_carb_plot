@@ -1,9 +1,7 @@
-README
+Carbonate System - relationships between parameters
 ================
 David Kaiser
 29 8 2020
-
-## Carbonate System - relationships between parameters
 
 Find an interactive `shiny` app that displays the relationship between
 different parameters of the carbonate system

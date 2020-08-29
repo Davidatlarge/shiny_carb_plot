@@ -1,5 +1,5 @@
 ---
-title: "README"
+title: "Carbonate System - relationships between parameters"
 author: "David Kaiser"
 date: "29 8 2020"
 output: github_document
@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-## Carbonate System - relationships between parameters
 
 Find an interactive `shiny` app that displays the relationship between different parameters of the carbonate system [**here**](https://davidatlarge.shinyapps.io/shiny_carb_plot/?_ga=2.134770553.964002575.1598730102-1166230829.1598207332). 
 The concentrations of CO~2~ and CO~3~^2-^ on the axes are in µmol kg^-1^. The other parameters are calculated using `seacarb::carb()`. The values on the contours are in mol kg^-1^! The plot is inspired by an old [presentation by Andrew Dickson](https://www.youtube.com/watch?v=dR917nXLEHU).
