@@ -15,7 +15,7 @@ library(tidyverse)
 ## Carbonate System - relationships between parameters
 
 This `shiny` app displays the relationship between different parameters of the carbonate system. 
-The concentrations of CO~2~ and CO~3~^2-^ on the axes are in $\mu$mol kg^-1^. The other parameters are calculated using `seacarb::carb()`. The plot is inspired by an old [presentation by Andrew Dickson](https://www.youtube.com/watch?v=dR917nXLEHU). I will make the x and y parameters selectable later.
+The concentrations of CO~2~ and CO~3~^2-^ on the axes are in $\mu$mol kg^-1^. The other parameters are calculated using `seacarb::carb()`. The values on the contours are in mol kg^-1^! The plot is inspired by an old [presentation by Andrew Dickson](https://www.youtube.com/watch?v=dR917nXLEHU). 
 
 ```{r data, echo=FALSE}
 

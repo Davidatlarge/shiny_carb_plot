@@ -5,6 +5,8 @@ account: davidatlarge
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2698329
-bundleId: 3548439
+bundleId: 3570781
 url: https://davidatlarge.shinyapps.io/shiny_carb_plot/
-when: 1598207696.37659
+when: 1598731222.03165
+asMultiple: FALSE
+asStatic: FALSE
