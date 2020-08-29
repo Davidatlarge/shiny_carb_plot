@@ -1,0 +1,78 @@
+---
+title: "README"
+author: "David Kaiser"
+date: "29 8 2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+## Carbonate System - relationships between parameters
+
+Find an interactive `shiny` app that displays the relationship between different parameters of the carbonate system [**here**](https://davidatlarge.shinyapps.io/shiny_carb_plot/?_ga=2.134770553.964002575.1598730102-1166230829.1598207332). 
+The concentrations of CO~2~ and CO~3~^2-^ on the axes are in µmol kg^-1^. The other parameters are calculated using `seacarb::carb()`. The values on the contours are in mol kg^-1^! The plot is inspired by an old [presentation by Andrew Dickson](https://www.youtube.com/watch?v=dR917nXLEHU).
+
+```{r data, echo=FALSE, message=FALSE, warning=FALSE}
+co2_data <- expand.grid(
+  co2 = seq(from = 0, to = 100, length.out = 101),
+  co3 = seq(from = 0, to = 300, length.out = 101)
+)
+
+carb.data <- cbind(co2_data,
+        seacarb::carb(
+          flag = 3,
+          var1 = co2_data$co2 / 1000000,
+          var2 = co2_data$co3 / 1000000,
+          S = 35,
+          T = 25,
+          P = 0,
+          Patm = 1,
+          Pt = 0,
+          Sit = 0,
+          k1k2 = "x",
+          kf = "x",
+          ks = "d",
+          pHscale = "T"
+        ) %>%
+          select(-c(flag, S, T, Patm, P, CO2, CO3)) 
+  ) %>%
+    #.[,order(colnames(.))] %>%
+    na_if("-Inf") %>% 
+    na_if("Inf") # geom_label_contour does not handle Inf
+
+```
+
+```{r plot, echo=FALSE, message=FALSE, warning=FALSE}
+
+    carb.data %>%
+    ggplot(aes(x = co2, y = co3, z = ALK, na), na.rm = TRUE) +
+    geom_contour(size = 1) +
+    metR::geom_label_contour() +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    theme_light() +
+    theme(text = element_text(size = 20))
+
+
+```
+
+```{r table, echo=FALSE}
+
+# inputPanel({
+#   sliderInput(inputId = "n_row", label = "Rows to display", width = "5cm",
+#               min = 0, max = 10200, value = c(0,10), step = 5)
+# })
+# 
+# renderTable({
+#   carb.data()[input$n_row[1]:input$n_row[2],]
+# })
+
+head(carb.data)
+
+```
+
+
